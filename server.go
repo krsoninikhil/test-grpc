@@ -66,7 +66,7 @@ func (is interviewServer) CampusDrive(stream pb.Interview_CampusDriveServer) err
 		}
 		err = stream.Send(&pb.Result{Selected: true, Remark: fmt.Sprintf("Well done %s", user.Name)})
 		if err != nil {
-			log.Printf("Failed to receive: %v", err)
+			log.Printf("Failed to send: %v", err)
 			return err
 		}
 	}

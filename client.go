@@ -19,7 +19,7 @@ func oneOnOneResult(client pb.InterviewClient, user *pb.User) {
 	defer cancel()
 
 	if result, err := client.OneOnOne(ctx, user); err != nil {
-		fmt.Printf("%v", err)
+		log.Printf("%v", err)
 	} else {
 		fmt.Printf("Result: %t, %s\n", result.Selected, result.Remark)
 	}
@@ -32,7 +32,7 @@ func onlineScreeningResult(client pb.InterviewClient, batch *pb.Batch) {
 
 	stream, err := client.OnlineScreening(ctx, batch)
 	if err != nil {
-		fmt.Printf("%v", err)
+		log.Printf("%v", err)
 		return
 	}
 	for {
@@ -85,20 +85,27 @@ func campusDriveResult(client pb.InterviewClient, batch *pb.Batch) {
 
 	for _, user := range batch.Users {
 		if err := stream.Send(user); err != nil {
-			fmt.Printf("Cannot send to stream: %v", err)
+			log.Printf("Cannot send to stream: %v", err)
 		}
 	}
-	for {
-		result, err := stream.Recv()
-		if err == io.EOF {
-			break
+
+	waitc := make(chan struct{})
+	// go routine to wait for messages from server
+	go func() {
+		for {
+			result, err := stream.Recv()
+			if err == io.EOF {
+				close(waitc)
+				break
+			}
+			if err != nil {
+				fmt.Printf("Cannot read from stream: %v", err)
+			}
+			fmt.Printf("Result for duplex: %t, %s\n", result.Selected, result.Remark)
 		}
-		if err != nil {
-			fmt.Printf("Cannot read from stream: %v", err)
-		}
-		log.Printf("Result for duplex: %t, %s\n", result.Selected, result.Remark)
-	}
+	}()
 	stream.CloseSend()
+	<-waitc
 }
 
 
