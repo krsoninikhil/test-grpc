@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option go_package = "github.com/krsoninikhil/test-grpc/protos";
+
+service Interview {
+  rpc OneOnOne(User) returns (Result) {}
+  rpc OnlineScreening(Batch) returns (stream Result) {}
+  rpc FinalRound(stream User) returns (ResultReport) {}
+  rpc CampusDrive(stream User) returns (stream Result) {}
+}
+
+message User {
+  string name = 1;
+  int32 year_of_exp = 2;
+}
+
+message Batch {
+  repeated User users = 1;
+}
+
+message Result {
+  bool selected = 1;
+  string remark = 2;
+}
+
+message ResultReport {
+  repeated Result results = 1;
+}
