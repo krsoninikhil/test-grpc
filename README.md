@@ -26,6 +26,16 @@ Just to try out gRPC in Go
   protoc --go_out=. --go_opt=paths=source_relative \
   --go-grpc_out=. --go-grpc_opt=paths=source_relative protos/service.proto
   ```
-- `--go_out` tells proto compiler to generate Go structs (`*.pb.go`) which depend on plugin `protoc-gen-go`.
-- `--go-grpc_out` tells the `protoc` to generate Go client code and service interface (`*_grpc.pb.go`)
-  using another plugin `protoc-gen-go-grpc`.
+- `--go_out` tells proto compiler to generate Go structs (`*.pb.go`) which
+  depend on plugin `protoc-gen-go`.
+- `--go-grpc_out` tells the `protoc` to generate Go client code and service
+  interface (`*_grpc.pb.go`) using another plugin `protoc-gen-go-grpc`.
+- Once the code is generated, server can implement the service interface using
+  the structs defined in `.pb.go` file and start to listen on a port.
+- Similarly, client can connect to the server using client defined in `_grpc.pb.go`
+  file to call the service methods and use the request and response structs
+  defined in `.pb.go` files.
+
+# References
+- https://grpc.io/docs/languages/go/quickstart/
+- https://grpc.io/docs/languages/go/basics/
